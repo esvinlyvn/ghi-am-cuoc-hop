@@ -69,6 +69,7 @@ Thông báo và xin phép người tham gia trước khi ghi âm.
 
 - **Không thấy thiết bị trong “Âm thanh máy tính”**: phát một đoạn tiếng, tải lại trang; kiểm tra `pyaudiowpatch` cài thành công trong cửa sổ setup.
 - **Chọn cửa sổ Zoom báo không có âm thanh**: đúng như thiết kế của Chrome trên Windows; dùng “Âm thanh máy tính” hoặc tách thiết bị phát theo hướng dẫn trên.
+- **Đoạn lỗi `open() got an unexpected keyword argument 'metadata_errors'`**: bản PyAV 19 đổi API, faster-whisper chưa theo kịp. Chạy lại `setup_windows.bat` (requirements đã ghim `av<19`, pip tự hạ phiên bản) rồi bấm **Thử lại đoạn lỗi**. Từ V1.2.1 phần mềm tự giải mã WAV bằng FFmpeg nên không còn đi qua PyAV khi chép lời.
 - **“Chưa chép lời được: Không tải được mô hình”**: cần Internet lần đầu, hoặc chọn GPU nhưng chưa có CUDA/cuDNN → đổi về CPU; âm thanh không mất.
 - **Thanh tín hiệu đứng ở 0%**: nguồn đang mute (Volume Mixer/Zoom), sai thiết bị loopback (Zoom phát ra tai nghe Bluetooth nhưng chọn loa), hoặc tab chưa bật “Share tab audio”.
 - **Mất kết nối ghi nguồn**: cửa sổ đen bị đóng. Mở lại `START_WINDOWS.bat`; phiên cũ được đánh dấu gián đoạn, có thể xuất những gì đã ghi.

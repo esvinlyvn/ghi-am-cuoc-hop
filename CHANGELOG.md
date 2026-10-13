@@ -1,5 +1,8 @@
 # MeetingScribe V1.2 — sửa logic, chạy ổn định cho cuộc họp dài
 
+## V1.2.1
+- Sửa lỗi chép lời `open() got an unexpected keyword argument 'metadata_errors'` (PyAV 19): worker tự giải mã WAV bằng FFmpeg thành mảng 16 kHz rồi đưa vào Whisper, không dùng PyAV; đồng thời ghim `av>=11,<19` trong requirements.
+
 ## Thu âm tab/cửa sổ (Chrome/Edge)
 - Chuyển sang **AudioWorklet** (dự phòng ScriptProcessor): PCM được tạo trên luồng âm thanh, không giật khi tab MeetingScribe ở nền nhiều giờ.
 - **Tự nối lại WebSocket** khi rớt; **cho chọn lại nguồn ngay trong lúc ghi** khi tab chia sẻ bị dừng (trước đây phải kết thúc phiên). Nguồn thêm giữa chừng được ghi vào cấu hình phiên.

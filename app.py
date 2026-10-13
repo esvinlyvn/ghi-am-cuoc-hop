@@ -32,7 +32,7 @@ from pydantic import BaseModel, Field
 from audio_engine import Recorder, enumerate_devices, salvage_partial_files
 from browser_capture import BrowserPCMWriter
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 ROOT = Path(__file__).resolve().parent
 DATA = Path(os.environ.get('MEETING_DATA_DIR', ROOT / 'data')).resolve()
 DATA.mkdir(parents=True, exist_ok=True)
@@ -313,6 +313,20 @@ def get_model(name, device):
     return mdl
 
 
+def load_audio_16k(path):
+    """Giải mã WAV thành mảng float32 16 kHz mono bằng FFmpeg.
+
+    Tự giải mã thay vì để faster-whisper dùng PyAV: tránh lỗi "open() got an unexpected
+    keyword argument 'metadata_errors'" khi PyAV đổi API (PyAV 19) và không phụ thuộc phiên bản.
+    """
+    proc = subprocess.run([ffmpeg_exe(), '-hide_banner', '-loglevel', 'error', '-i', str(path),
+                           '-f', 's16le', '-ac', '1', '-ar', '16000', '-'], capture_output=True)
+    if proc.returncode != 0 or not proc.stdout:
+        raise RuntimeError('FFmpeg không đọc được đoạn âm thanh: ' + (proc.stderr.decode('utf-8', 'ignore')[-400:] or 'không có dữ liệu'))
+    import numpy as np
+    return np.frombuffer(proc.stdout, dtype='<i2').astype('float32') / 32768.0
+
+
 def transcribe_worker():
     while True:
         ch = None
@@ -342,7 +356,8 @@ def transcribe_worker():
                 time.sleep(8)
                 continue
             MODEL_CACHE['error'] = ''
-            segments, _ = model.transcribe(str(wavfile), language=(ch['language'] if ch['language'] in ('vi', 'en') else None),
+            audio = load_audio_16k(wavfile)
+            segments, _ = model.transcribe(audio, language=(ch['language'] if ch['language'] in ('vi', 'en') else None),
                                            task='transcribe', beam_size=4, vad_filter=True,
                                            vad_parameters={'min_silence_duration_ms': 600},
                                            condition_on_previous_text=False)
