@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark"><title>MeetingScribe — Ghi chép cuộc họp cục bộ</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23f56057%27 stroke-width=%272%27%3E%3Crect x=%279%27 y=%272%27 width=%276%27 height=%2713%27 rx=%273%27/%3E%3Cpath d=%27M5 10a7 7 0 0 0 14 0M12 17v5M7 22h10%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/style.css"></head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+ <div class="brand"><div class="brandlogo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M7 22h10"/></svg></div><div><b>MeetingScribe</b><small>LOCAL STUDIO · V1.2</small></div></div>
+ <div class="sidebar-header"><span>CUỘC HỌP CỦA BẠN</span><button id="newBtn" class="icon-btn" title="Tạo cuộc họp mới">＋</button></div>
+ <div id="meetingList" class="meeting-list"><div class="sideempty">Đang tải...</div></div>
+ <div class="sidebottom"><span class="online-dot"></span> Lưu trên máy tính<br><small id="systemHint">Không sử dụng dịch vụ đám mây</small></div>
+</aside>
+<main class="main">
+ <header class="topbar"><div class="crumb">KHÔNG GIAN LÀM VIỆC <span>/</span> <strong id="topTitle">Cuộc họp mới</strong></div><div class="topactions"><span class="pill" id="connPill">● Đang kiểm tra</span><button class="btn subtle" id="guideBtn">Hướng dẫn</button></div></header>
+ <div class="viewport">
+  <section class="intro"><div><div class="eyebrow">WORKSPACE / MEETING CAPTURE</div><h1 id="mainTitle">Ghi lại mọi điều quan trọng.</h1><p>Thu âm và chép lời đầy đủ trên máy. Tệp Markdown sẵn sàng cho ChatGPT, Claude hoặc NotebookLM.</p></div><div class="versionflag">V1.2 <span>LOCAL</span></div></section>
+  <div id="globalNotice" class="notice hidden"></div>
+  <div class="grid-top">
+   <section class="panel recorder-panel">
+    <div class="panel-heading"><div><div class="panel-kicker">01 · TRUNG TÂM THU ÂM</div><h2>Ghi âm cuộc họp</h2></div><span id="recordBadge" class="status idle">CHƯA GHI</span></div>
+    <label class="fieldlabel" for="titleField">Tên phiên ghi</label><input id="titleField" class="control" maxlength="200" placeholder="Ví dụ: Họp điều hành sáng thứ Hai">
+    <div class="controls-row"><div class="input-group"><label class="fieldlabel" for="systemDevice">Âm thanh máy tính (mọi ứng dụng, kể cả Zoom cài trên máy)</label><select id="systemDevice" class="control"><option value="">Đang tìm thiết bị...</option></select></div><div class="input-group"><label class="fieldlabel" for="micDevice">Micro / người tại máy</label><select id="micDevice" class="control"><option value="">Đang tìm thiết bị...</option></select></div></div>
+    <div class="selective-box">
+      <div class="selective-heading"><strong>Ghi chọn lọc 1–2 tab hoặc cửa sổ</strong><span class="pill">CHROME / EDGE</span></div>
+      <p class="formhint">Bấm chọn từng nguồn để mở hộp thoại của Chrome/Edge, chọn <b>Tab</b> đang họp và bật <b>“Chia sẻ âm thanh tab”</b>. Chế độ này chỉ lấy tiếng của tab đã chọn, bỏ qua mọi ứng dụng khác. Cửa sổ ứng dụng cài trên máy (Zoom/Teams desktop) thường không cấp âm thanh riêng — khi đó dùng “Âm thanh máy tính” ở trên. Nếu tab dừng chia sẻ giữa chừng, bấm lại nút để nối tiếp vào phiên đang ghi.</p>
+      <label class="silent-setting"><input id="silentPlayback" type="checkbox"> Không phát âm thanh tab ra loa khi ghi (chỉ tab Chrome/Edge; vẫn ghi đầy đủ)</label>
+      <div class="selective-grid">
+       <div class="selective-source"><button type="button" class="btn outline" id="pickBrowser1">+ Chọn nguồn 1</button><span id="browser1Label">Chưa chọn</span><button id="clearBrowser1" class="icon-btn" title="Hủy nguồn 1">×</button><div class="bar"><i id="browser1Level"></i></div><small id="browser1Pct">0%</small></div>
+       <div class="selective-source"><button type="button" class="btn outline" id="pickBrowser2">+ Chọn nguồn 2</button><span id="browser2Label">Chưa chọn</span><button id="clearBrowser2" class="icon-btn" title="Hủy nguồn 2">×</button><div class="bar"><i id="browser2Level"></i></div><small id="browser2Pct">0%</small></div>
+      </div>
+      <div id="captureWarnings" class="capture-warnings hidden" role="alert"></div>
+      <p class="formhint"><b>Lưu ý:</b> Không chọn đồng thời “Âm thanh máy tính” và tab chứa cùng tiếng họp vì sẽ ghi trùng. Ứng dụng bị <b>mute trong Volume Mixer của Windows</b> sẽ KHÔNG có tiếng ở chế độ “Âm thanh máy tính”; muốn im lặng mà vẫn ghi, dùng ô “Không phát âm thanh tab ra loa” ở trên. Luôn ghi thử 30 giây và nhìn thanh tín hiệu trước cuộc họp thật.</p>
+    </div>
+    <div class="meters"><div><div class="meterhead"><span>HỆ THỐNG</span><span id="systemPct">0%</span></div><div class="bar"><i id="systemLevel"></i></div></div><div><div class="meterhead"><span>MICRO</span><span id="micPct">0%</span></div><div class="bar"><i id="micLevel"></i></div></div></div>
+    <div class="counter"><div><span class="timer" id="clock">00:00:00</span><div class="timerlabel">THỜI LƯỢNG PHIÊN</div></div><div class="record-icon" id="liveIcon">◉</div></div>
+    <div class="record-actions"><button id="startBtn" class="btn primary big">● &nbsp; Bắt đầu ghi âm</button><button id="pauseBtn" class="btn outline hidden">Ⅱ Tạm dừng</button><button id="resumeBtn" class="btn outline hidden">▶ Tiếp tục</button><button id="stopBtn" class="btn danger hidden">■ Kết thúc</button></div>
+    <p class="minor">Chỉ ghi khi bạn chủ động bấm bắt đầu. Nên thông báo và được sự đồng ý của người tham gia.</p>
+   </section>
+   <section class="panel setup-panel">
+    <div class="panel-heading"><div><div class="panel-kicker">02 · BỘ NHẬN DẠNG</div><h2>Chuyển giọng nói thành chữ</h2></div><span class="chip">WHISPER CỤC BỘ</span></div>
+    <label class="fieldlabel" for="modelSelect">Độ chính xác / tốc độ</label><select class="control" id="modelSelect"><option value="tiny">Nhanh nhất · Tiny</option><option value="base">Nhanh · Base</option><option value="small" selected>Cân bằng · Small (đề xuất)</option><option value="medium">Chính xác hơn · Medium</option><option value="large-v3">Độ chính xác cao · Large V3</option><option value="turbo">Turbo · tối ưu GPU</option></select>
+    <div class="controls-row"><div class="input-group"><label class="fieldlabel" for="deviceSelect">Phần cứng</label><select class="control" id="deviceSelect"><option value="cpu">CPU · tương thích nhất</option><option value="cuda">GPU NVIDIA · CUDA</option></select></div><div class="input-group"><label class="fieldlabel" for="languageSelect">Ngôn ngữ</label><select class="control" id="languageSelect"><option value="vi">Tiếng Việt</option><option value="auto">Tự phát hiện</option><option value="en">Tiếng Anh</option></select></div></div>
+    <div class="sectionline"></div>
+    <div class="miniheading">TÌNH TRẠNG XỬ LÝ <button id="retryAllBtn" class="btn outline small hidden" title="Đưa toàn bộ đoạn lỗi vào hàng đợi lại">↻ Thử lại đoạn lỗi</button></div><div class="statsrow"><div><strong id="wordsStat">0</strong><small>ĐOẠN LỜI THOẠI</small></div><div><strong id="pendingStat">0</strong><small>ĐỢI CHÉP LỜI</small></div><div><strong id="errorStat">0</strong><small>ĐOẠN LỖI</small></div></div>
+    <p class="tip">Âm thanh luôn được lưu trước. Máy yếu có thể tiếp tục chép lời sau khi cuộc họp kết thúc. Lần đầu dùng từng mô hình cần Internet để tải về.</p>
+   </section>
+  </div>
+  <section class="panel content-panel">
+   <div class="tabbar"><button class="tab active" data-tab="transcript">Bản chép lời</button><button class="tab" data-tab="notes">Ghi chú</button><button class="tab" data-tab="import">Nhập tệp âm thanh</button><button class="tab" data-tab="speaker">Người nói</button></div>
+   <div id="tab-transcript" class="tabview">
+    <div class="listtoolbar"><div><h2>Bản chép lời nguyên văn</h2><p id="transcriptHint">Dòng thời gian được cập nhật khi từng đoạn xử lý xong.</p></div><div class="searchwrap"><input class="control search" id="searchBox" placeholder="Tìm trong lời thoại..." aria-label="Tìm lời thoại"></div></div>
+    <div id="transcriptList" class="transcript-list"><div class="empty-state"><div class="empty-icon">≋</div><strong>Chưa có nội dung</strong><span>Bắt đầu ghi hoặc nhập tệp âm thanh để tạo bản chép lời.</span></div></div>
+   </div>
+   <div id="tab-notes" class="tabview hidden"><h2>Ghi chú thủ công</h2><p class="formhint">Đánh dấu sự kiện ở đúng mốc thời gian (khi đang ghi: mốc hiện tại; khi nghe lại: vị trí đang phát). Ghi chú được xuất kèm trong Markdown.</p><div class="notegrid"><select class="control" id="noteKind"><option>Ghi chú</option><option>Quyết định</option><option>Công việc</option><option>Cần xác minh</option></select><input type="text" class="control" id="noteText" placeholder="Ghi điều quan trọng cần đánh dấu..."><button class="btn primary" id="addNoteBtn">＋ Thêm</button></div><div id="notesList" class="notes-list"></div></div>
+   <div id="tab-import" class="tabview hidden"><h2>Nhập bản ghi có sẵn</h2><p class="formhint">MP3, WAV, M4A, AAC, FLAC, OGG, OPUS, WMA, WebM hoặc MP4 (ví dụ bản ghi do Zoom tạo). Tệp được lưu và xử lý ngay trên máy; có thể nhập nhiều tệp nối tiếp.</p><label class="drop" for="audioInput"><span class="dropicon">↥</span><strong>Chọn tệp âm thanh / video</strong><small id="fileLabel">Chưa chọn tệp</small><input type="file" id="audioInput" accept="audio/*,video/mp4,video/webm,.m4a,.wma,.flac,.opus" hidden></label><button id="uploadBtn" class="btn primary">Nhập và chuyển văn bản</button><div id="uploadStatus" class="formhint"></div></div>
+   <div id="tab-speaker" class="tabview hidden"><h2>Quản lý người nói</h2><p class="formhint">Micro được đánh dấu LOCAL; âm thanh máy tính có thể chứa nhiều người nên mặc định là UNKNOWN. Bạn có thể đặt tên thủ công hoặc dùng nhận diện người nói nâng cao (tùy chọn).</p><div id="speakerList" class="speakerList"></div><div class="sectionline"></div><h3>Phân biệt người nói tự động (tùy chọn)</h3><p class="formhint">Cần cài mô-đun pyannote, chấp nhận điều khoản Community-1 và cung cấp mã Hugging Face. Nhãn được gán theo giọng nói, không tự biết tên thật.</p><div class="notegrid"><select class="control" id="speakerSource"><option value="system">Âm thanh máy tính</option><option value="imported">Tệp tải lên</option><option value="browser1">Nguồn chọn 1</option><option value="browser2">Nguồn chọn 2</option></select><input id="hfToken" type="password" class="control" placeholder="Mã truy cập Hugging Face (không lưu)" autocomplete="off"><button class="btn outline" id="diarizeBtn">Phân tích người nói</button></div><p id="diarizeState" class="formhint"></p></div>
+  </section>
+  <section class="panel bottom-panel"><div><div class="panel-kicker">03 · BẢN GHI VÀ BÀN GIAO</div><h2>Nghe lại & xuất dữ liệu</h2><p>Xuất bản chép lời đầy đủ, không tóm tắt hay lược bỏ nội dung.</p></div><div class="exportbar"><select id="audioSource" class="control"><option value="system">Nghe tiếng máy tính</option><option value="mic">Nghe tiếng micro</option><option value="imported">Nghe tệp nhập</option><option value="browser1">Nghe nguồn chọn 1</option><option value="browser2">Nghe nguồn chọn 2</option></select><button class="btn outline" id="loadAudioBtn">▶ Tạo bản nghe</button><a class="btn outline" href="#" id="exportTxt">↓ TXT</a><a class="btn outline" href="#" id="exportBundle">↓ ZIP chia giờ</a><a class="btn primary" href="#" id="exportMd">↓ Xuất Markdown</a></div><audio id="audioPlayer" controls preload="none" class="audio-player hidden"></audio><div class="bottomhint" id="exportHint">Sau khi chép lời xong, tải .md lên ChatGPT, Claude hoặc NotebookLM.</div><div class="danger-zone"><button id="finalizeBtn" class="btn outline hidden">Xác nhận kết thúc phiên đã khôi phục</button><button id="deleteBtn" class="textdanger">Xóa vĩnh viễn cuộc họp này</button></div></section>
+ </div>
+</main>
+</div>
+<div id="toast" class="toast hidden" role="alert"></div>
+<dialog id="dialog"><div class="modal"><h2 id="dialogTitle">Thông báo</h2><p id="dialogMessage"></p><div class="modal-actions"><button class="btn outline" id="dialogCancel">Hủy</button><button class="btn danger" id="dialogConfirm">Xác nhận</button></div></div></dialog>
+<script src="/browser-sources.js" defer></script>
+<script src="/main.js" defer></script>
+</body></html>
